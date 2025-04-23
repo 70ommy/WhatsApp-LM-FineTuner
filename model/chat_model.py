@@ -37,7 +37,7 @@ model = AutoModelForCausalLM.from_pretrained(
     MODEL_NAME,
     device_map ='auto'
 )
-model.resize_token_embeddings(len(tokenizer))
+model.resize_token_embeddings(len(tokenizer), pad_to_multuple_of=8)
 
 # Move model to the selected device
 model = model.to(device)
