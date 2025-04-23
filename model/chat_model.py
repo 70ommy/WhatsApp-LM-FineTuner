@@ -26,20 +26,18 @@ PAD_TOKEN = '<|pad|>'
 MODEL_NAME = 'meta-llama/Meta-Llama-3-8B-Instruct'
 NEW_MODEL = 'Llama-3-8B-Instruct-Whatsapp-LM-FineTuner'
 
-# Load the model (without BitsAndBytes quantization)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, use_fast=True)
+tokenizer = AutoTokenizer.from_pretrained(
+    MODEL_NAME, 
+    use_fast=True, 
+    force_download=True
+    )
 tokenizer.add_special_tokens({'pad_token':PAD_TOKEN})
 tokenizer.padding_side = 'right'
 
 model = AutoModelForCausalLM.from_pretrained(
     MODEL_NAME,
-    device_map ='auto'
+    device_map ='auto',
+    torch_dtype=torch.bfloat16 ,
+    force_download=True  # important
 )
-model.resize_token_embeddings(len(tokenizer), pad_to_multuple_of=8)
-
-# Move model to the selected device
-model = model.to(device)
-
-print(f"Model loaded on {device}")
+model.resize_token_embeddings(len(tokenizer))
